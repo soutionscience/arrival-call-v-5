@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> start tracking</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-grid>
+
+      <ion-row>
+        <ion-col class="mycols"></ion-col>
+        <ion-col size="10">
+          <ion-searchbar #searchBar placeholder="call me when we reach?" (keyup)="search(searchBar.value)">
+            
+          </ion-searchbar>
+          <ion-list *ngIf="places">
+            <ion-item lines="none" detail class="full-width"
+            *ngFor="let p of places" 
+            >
+          <!-- <ion-label class="ion-text-wrap">{{p.description}}</ion-label> -->
+          <ion-button expand="full" fill="clear" (click)="selectPlace(p)">{{p.description}}</ion-button>
+            
+            </ion-item>
+          </ion-list>
+        </ion-col>
+        <ion-col size="1">
+          <ion-icon name="add-outline" size="large"></ion-icon>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div #map id="map">
+    
+  </div>
+<ion-button (click)="track()">Start tracking</ion-button>
+
+<div class="places">
+  <p>{{positionLength}}</p>
+  <ion-item *ngIf="positions">
+ 
+    <div>
+    <p *ngFor="let item of positions"> {{item.coords1}}  {{item.coord2}}</p>
+    </div>
+  </ion-item>
+</div>
+
+<div class="button">
+  <ion-button (click)="homeGate()">Home Gate</ion-button>
+</div>
+</ion-content>
