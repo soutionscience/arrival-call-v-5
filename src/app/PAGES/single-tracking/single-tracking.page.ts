@@ -50,11 +50,11 @@ export class SingleTrackingPage implements OnInit {
    getDetails(){
      this.route.params.subscribe((resp)=>{
      this.place = resp
-    console.log(this.place.name)})
+    console.log(this.place.name, 'lat ', this.place)})
    }
 
    startTracking(){
-    //this.backgroundMode.enable()
+   // this.backgroundMode.enable()
     this. watch = this.geoLocation.watchPosition({ enableHighAccuracy: true });
     this.watch.subscribe((data)=>{
       let current = {lat:data.coords.latitude, lng: data.coords.longitude };
@@ -74,6 +74,7 @@ export class SingleTrackingPage implements OnInit {
    //  this.geoLocation.clearWatch(this.watch)
    }
    back(){
+     this.place ='';
      this.navCtrl.navigateBack('tracking')
    }
    
