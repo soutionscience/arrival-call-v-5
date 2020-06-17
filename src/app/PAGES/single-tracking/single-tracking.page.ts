@@ -5,6 +5,8 @@ import { CalService } from 'src/app/SERVICES/cal.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
+import { Trip } from 'src/app/SHARED/models/trip.model';
 const mainGate = {lat: -1.258889,  lng: 36.781700 }
 const grMathenge ={lat:-1.253677, lng:36.799868}
 const embu = {lat:-0.533461, lng:37.450854}
@@ -21,7 +23,9 @@ export class SingleTrackingPage implements OnInit {
   watch: any
   rangeForm: FormGroup;
   message:  string ='';
-  distance: any [] =[]
+  distance: any [] =[];
+  activeTrip: Trip;
+  maxTripDuration: number //add hours and stuff
 
   constructor(private navParams: NavParams, 
     private route: ActivatedRoute, 
@@ -29,7 +33,8 @@ export class SingleTrackingPage implements OnInit {
     private geoLocation: Geolocation,
     private backgroundMode: BackgroundMode,
     private navCtrl: NavController,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private appStorage: AppStorageService) {
     //console.log(this.navParams.data.homeGate)
     //this.place = this.navParams.data.
     this.getDetails()
@@ -38,9 +43,18 @@ export class SingleTrackingPage implements OnInit {
   ngOnInit() {
     this.createForm()
   }
-  ionViewWillEnter(){
-    this.createForm()
 
+  ionViewWillEnter(){
+    this.createForm();
+    this.getTripDetails();
+
+  }
+  getTripDetails(){
+    this.appStorage.getTrips('activeTrip')
+    .then((resp)=>{
+      this.activeTrip = resp;
+      this.maxTripDuration = Math.floor(this.activeTrip.tripDuration.value/60)
+    })
   }
   createForm(){
     this.rangeForm = this.fb.group({

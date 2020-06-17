@@ -6,7 +6,7 @@
 
 <ion-content>
   <ion-item *ngIf="place" [formGroup]="rangeForm">
-    <ion-range formControlName="minRange" #minsValue min="0" max="1" step="0.1" pin="true" snaps="true" ticks="true">
+    <ion-range formControlName="minRange" #minsValue min="0" [max]="maxTripDuration" step="1" pin="true" snaps="true" ticks="true">
       <ion-icon size="small" slot="start"></ion-icon>
       <ion-icon slot="end" name="alarm-outline"></ion-icon>
     </ion-range>

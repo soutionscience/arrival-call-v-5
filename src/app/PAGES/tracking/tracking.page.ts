@@ -7,6 +7,7 @@ import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { JsonPipe } from '@angular/common';
+import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
 const homeGate = {lat:-1.257518, lng: 36.781870}
 const mainGate = {lat: -1.258889,  lng: 36.781700 }
 
@@ -35,7 +36,8 @@ export class TrackingPage implements OnInit {
      private geoLocation: Geolocation,
      private backgroundMode: BackgroundMode, 
     //  private navCtr: NavController,
-     private router: Router
+     private router: Router,
+     private appStorage: AppStorageService
    
      ) { }
 
@@ -117,8 +119,14 @@ export class TrackingPage implements OnInit {
         myPackage = {destination:{lat: lat, lng: lng},origin:{lat: this.myLocation.origin.lat, lng: this.myLocation.origin.lng}}
         this.api.postResource('trips', myPackage)
         .subscribe(resp=>{
-          console.log('responce ', resp.body);
-          
+          //console.log('responce ', resp.body);
+          this.appStorage.storeTrip('activeTrip', resp)
+          .then((resp)=>{
+            this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
+          })
+
+         // console.log(this.appStorage.getTrips('activeTrip'))
+
         })
         //console.log('obj ', myOb)
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 //import { Storage } from '@ionic/storage';
 import { Trip } from '../SHARED/models/trip.model';
 import { Plugins } from '@capacitor/core';
+import { async } from '@angular/core/testing';
 const { Storage } = Plugins;
 
 
@@ -13,13 +14,14 @@ export class AppStorageService {
   trip: Trip
 
   constructor() { }
-  async storeTrip(key, obj){
+  storeTrip= async (key, obj)=>{
     let o= JSON.parse( obj.body);
     let trip: Trip;
     trip= {origin: {name: o.origin_addresses[0]},
     destination:{name: o.destination_addresses[0] },
-    tripDuration: o.rows[0].elements[0].duration.text,
-    tripDurationSec:o.rows[0].elements[0].duration.value
+    tripDuration: {text: o.rows[0].elements[0].duration.text, value:o.rows[0].elements[0].duration.value },
+    tripDurationSec:o.rows[0].elements[0].duration.value,
+    distance:{text:o.rows[0].elements[0].distance.text, value: o.rows[0].elements[0].distance.text}
   }
   this.trip =trip
   await Storage.set({key: key, value: JSON.stringify(this.trip)});
