@@ -21,6 +21,7 @@ export class SingleTrackingPage implements OnInit {
   watch: any
   rangeForm: FormGroup;
   message:  string ='';
+  distance: any [] =[]
 
   constructor(private navParams: NavParams, 
     private route: ActivatedRoute, 
@@ -58,11 +59,10 @@ export class SingleTrackingPage implements OnInit {
     this. watch = this.geoLocation.watchPosition({ enableHighAccuracy: true });
     this.watch.subscribe((data)=>{
       let current = {lat:data.coords.latitude, lng: data.coords.longitude };
-      // let destination ={lat: }
-
-     // this.positions.push(this.calc.calculateRadius(data.coords.latitude, data.coords.longitude, ''))
-     //console.log('current ', current)
-     this.calc.calculateRadius(this.place, current, this.rangeForm.value.minRange)?   this.navCtrl.navigateForward('/success'): this.message ='still tracking'
+   
+   this.distance.push(this.calc.calculateRadius(this.place, current, this.rangeForm.value.minRange))
+   this.calc.calculateRadius(this.place, current, this.rangeForm.value.minRange) <= 
+   this.rangeForm.value.minRange ? this.navCtrl.navigateForward('/success'): this.message ='still tracking'
    
       console.log('test ', this.calc.calculateRadius(this.place, current, this.rangeForm.value.minRange) )
      this.positionLength = this.positions.length

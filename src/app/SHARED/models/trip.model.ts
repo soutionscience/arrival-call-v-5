@@ -5,7 +5,8 @@ export interface Trip{
     destination:{
         name: string
     },
-    tripDuration?: number,
+    tripDuration?: {value: number, text: string},
+    distance?: {value:number, text: string }
     tripDurationSec?: number,
     notification?: number,
     active?:boolean

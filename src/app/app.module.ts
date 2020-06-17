@@ -11,12 +11,14 @@ import { AppComponent } from './app.component';
 import { RestangularModule } from 'ngx-restangular';
 import { restangularConfigFactory } from './SHARED/restangular.config';
 import { HttpClientModule } from '@angular/common/http';
+import { Storage, IonicStorageModule } from '@ionic/storage';
+
 
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,
-  RestangularModule.forRoot(restangularConfigFactory), HttpClientModule],
+  RestangularModule.forRoot(restangularConfigFactory), HttpClientModule, IonicStorageModule.forRoot()],
   providers: [
     StatusBar,
     SplashScreen,

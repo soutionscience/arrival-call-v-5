@@ -6,6 +6,7 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { JsonPipe } from '@angular/common';
 const homeGate = {lat:-1.257518, lng: 36.781870}
 const mainGate = {lat: -1.258889,  lng: 36.781700 }
 
@@ -23,6 +24,7 @@ export class TrackingPage implements OnInit {
   service: any;
   places: any []=[];
   map: any;
+  myLocation: any;
 
 
   @ViewChild('map',{static:false}) mapElement: ElementRef
@@ -34,6 +36,7 @@ export class TrackingPage implements OnInit {
      private backgroundMode: BackgroundMode, 
     //  private navCtr: NavController,
      private router: Router
+   
      ) { }
 
   ngOnInit() {
@@ -49,6 +52,7 @@ export class TrackingPage implements OnInit {
       let lat = resp.coords.latitude;
       let lng = resp.coords.longitude;
       myOb = {origin: {lat:lat, lng: lng}}
+      this.myLocation = myOb;
       //console.log('got location ', myOb)
       //this.locationsPacket.push(myOb)
 
@@ -105,13 +109,20 @@ export class TrackingPage implements OnInit {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
        // console.log('location ', result.geometry.location.lat())
         let myOb ={}
+        let myPackage ={};
         let lat = result.geometry.location.lat();
         let lng = result.geometry.location.lng();
         console.log('lat ',lat)
         myOb = {lat:lat, lng: lng};
-        console.log('obj ', myOb)
+        myPackage = {destination:{lat: lat, lng: lng},origin:{lat: this.myLocation.origin.lat, lng: this.myLocation.origin.lng}}
+        this.api.postResource('trips', myPackage)
+        .subscribe(resp=>{
+          console.log('responce ', resp.body);
+          
+        })
+        //console.log('obj ', myOb)
 
-        this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
+      //  this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
       
 
 

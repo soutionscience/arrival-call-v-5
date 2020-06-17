@@ -32,8 +32,8 @@ export class CalService {
      let c  = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
      let d = R*c;
     // console.log('what is d ', d)
-   return d<=fence? true: false
-    // return d;
+   //return d<=fence? true: false
+     return d;
 
 
     }

@@ -22,6 +22,9 @@
   <div class="message">
     <ion-item *ngIf="message">{{message}}</ion-item>
   </div>
+  <div class="distance" *ngIf="distance">
+    <ion-item *ngFor="let i of distance">{{i}}</ion-item>
+  </div>
 
   <div class="results" *ngIf="positions">
     <ion-item *ngFor="let i of positions">{{i.coords1}}</ion-item>
