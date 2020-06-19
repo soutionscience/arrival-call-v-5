@@ -147,7 +147,8 @@ export class TrackingPage implements OnInit {
   // }
 
   selectPlace(p){
-    console.log('selected ',p.description);
+   // console.log('selected ',p.description);
+   this.presentLoading()
     let origin = new google.maps.LatLng(this.myLocation.origin.lat, this.myLocation.origin.lng);
     let service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
@@ -158,7 +159,8 @@ export class TrackingPage implements OnInit {
       if(status == 'OK'){
         this.appStorage.storeTrip('activeTrip', resp)
         .then((resp)=>{
-          console.log('resp ', resp)
+          this.loading.dismiss();
+         this.router.navigate(['/single-tracking',])
         })
       }
 
