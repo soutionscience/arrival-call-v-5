@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Trip } from '../SHARED/models/trip.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class CalService {
   constructor() { }
 
   calculateRadius(coords1, coords2, fence){
-    console.log('called ', fence)
+    //console.log('called ', fence)
    const toRad=(x)=>{
       return  x* Math.PI/180;
     }
@@ -41,5 +42,12 @@ export class CalService {
       console.log('called')
       let obj = {coords1, coord2}
      return obj
+    }
+
+
+    setFence(trip: Trip, time){
+      let estimatedSpeed = trip.distance.value/(trip.tripDuration.value/60);
+      let actualFence = estimatedSpeed * time;
+      return actualFence/1000
     }
 }

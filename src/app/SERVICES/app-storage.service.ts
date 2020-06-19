@@ -21,7 +21,7 @@ export class AppStorageService {
     destination:{name: o.destination_addresses[0] },
     tripDuration: {text: o.rows[0].elements[0].duration.text, value:o.rows[0].elements[0].duration.value },
     tripDurationSec:o.rows[0].elements[0].duration.value,
-    distance:{text:o.rows[0].elements[0].distance.text, value: o.rows[0].elements[0].distance.text}
+    distance:{text:o.rows[0].elements[0].distance.text, value: o.rows[0].elements[0].distance.value}
   }
   this.trip =trip
   await Storage.set({key: key, value: JSON.stringify(this.trip)});

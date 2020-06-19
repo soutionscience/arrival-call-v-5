@@ -4,7 +4,14 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="page">
+
+  <h1>Select call time</h1>
+  <div class="loader"></div>
+
+  <div class="bottom-container">
+
+
   <ion-item *ngIf="place" [formGroup]="rangeForm">
     <ion-range formControlName="minRange" #minsValue min="0" [max]="maxTripDuration" step="1" pin="true" snaps="true" ticks="true">
       <ion-icon size="small" slot="start"></ion-icon>
@@ -12,10 +19,14 @@
     </ion-range>
 
   </ion-item>
-  <ion-item>{{rangeForm.value.minRange}}km</ion-item>
+  <ion-label color="secondary" id="lbl">Time in Minutes</ion-label>
+  <ion-button (click)="startTracking()" color="secondary" id="cta">Track</ion-button>
+</div>
+  <ion-item>{{rangeForm.value.minRange}} mins </ion-item>
+  <ion-item>and fence distance is {{fence}} km</ion-item>
 
   <div class="button">
-    <ion-button (click)="startTracking()">Track</ion-button>
+  
     <ion-button   (click)="back()">BACK</ion-button>
   </div>
 

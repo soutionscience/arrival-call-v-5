@@ -4,7 +4,7 @@ import { CalService } from 'src/app/SERVICES/cal.service';
 import{} from 'google-maps';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
-import { NavController } from '@ionic/angular';
+import { NavController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { JsonPipe } from '@angular/common';
 import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
@@ -31,13 +31,15 @@ export class TrackingPage implements OnInit {
   @ViewChild('map',{static:false}) mapElement: ElementRef
   markers: any []=[];
   infowindow: google.maps.InfoWindow;
+  loading: any;
 
   constructor(private api: ApiService,private cacl: CalService,
      private geoLocation: Geolocation,
      private backgroundMode: BackgroundMode, 
     //  private navCtr: NavController,
      private router: Router,
-     private appStorage: AppStorageService
+     private appStorage: AppStorageService,
+     private loadingController: LoadingController
    
      ) { }
 
@@ -100,7 +102,8 @@ export class TrackingPage implements OnInit {
    this.router.navigate(['/single-tracking', {homeGate}])
   }
   selectPlace(p){
-   console.log('selected ', p)
+   console.log('selected ', p);
+   this.presentLoading()
     this.service = new google.maps.places.PlacesService(this.map);
     //console.log('service ', this.service)
     var request = {
@@ -122,6 +125,7 @@ export class TrackingPage implements OnInit {
           //console.log('responce ', resp.body);
           this.appStorage.storeTrip('activeTrip', resp)
           .then((resp)=>{
+            this.loading.dismiss()
             this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
           })
 
@@ -158,5 +162,18 @@ export class TrackingPage implements OnInit {
      this.markers.push(marker)
      this.service = new google.maps.places.PlacesService(this.map)
    }
+
+
+   async presentLoading() {
+    this.loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: 'Please wait...'
+      // duration: 2000
+    });
+    await this.loading.present();
+
+    const { role, data } = await this.loading.onDidDismiss();
+    console.log('Loading dismissed!');
+  }
 
 }
