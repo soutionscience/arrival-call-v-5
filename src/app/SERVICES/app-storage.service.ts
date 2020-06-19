@@ -15,10 +15,11 @@ export class AppStorageService {
 
   constructor() { }
   storeTrip= async (key, obj)=>{
-    let o= JSON.parse( obj.body);
+    console.log('obj ', obj)
+    let o= obj
     let trip: Trip;
-    trip= {origin: {name: o.origin_addresses[0]},
-    destination:{name: o.destination_addresses[0] },
+    trip= {origin: {name: o.originAddresses[0]},
+    destination:{name: o.destinationAddresses[0] },
     tripDuration: {text: o.rows[0].elements[0].duration.text, value:o.rows[0].elements[0].duration.value },
     tripDurationSec:o.rows[0].elements[0].duration.value,
     distance:{text:o.rows[0].elements[0].distance.text, value: o.rows[0].elements[0].distance.value}

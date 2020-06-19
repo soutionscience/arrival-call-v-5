@@ -8,6 +8,7 @@ import { NavController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { JsonPipe } from '@angular/common';
 import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
+import { isGeneratedFile } from '@angular/compiler/src/aot/util';
 const homeGate = {lat:-1.257518, lng: 36.781870}
 const mainGate = {lat: -1.258889,  lng: 36.781700 }
 
@@ -101,48 +102,67 @@ export class TrackingPage implements OnInit {
   homeGate(){
    this.router.navigate(['/single-tracking', {homeGate}])
   }
-  selectPlace(p){
-   console.log('selected ', p);
-   this.presentLoading()
-    this.service = new google.maps.places.PlacesService(this.map);
-    //console.log('service ', this.service)
-    var request = {
-      placeId: p.place_id,
-      fields: ['name', 'formatted_address', 'place_id', 'geometry']
-    };
-    this.service.getDetails(request,(result, status)=>{
-      if (status === google.maps.places.PlacesServiceStatus.OK) {
-       // console.log('location ', result.geometry.location.lat())
-        let myOb ={}
-        let myPackage ={};
-        let lat = result.geometry.location.lat();
-        let lng = result.geometry.location.lng();
-        console.log('lat ',lat)
-        myOb = {lat:lat, lng: lng};
-        myPackage = {destination:{lat: lat, lng: lng},origin:{lat: this.myLocation.origin.lat, lng: this.myLocation.origin.lng}}
-        this.api.postResource('trips', myPackage)
-        .subscribe(resp=>{
-          //console.log('responce ', resp.body);
-          this.appStorage.storeTrip('activeTrip', resp)
-          .then((resp)=>{
-            this.loading.dismiss()
-            this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
-          })
+  // selectPlace(p){
+  //  console.log('selected ', p);
+  //  this.presentLoading()
+  //   this.service = new google.maps.places.PlacesService(this.map);
+  //   //console.log('service ', this.service)
+  //   var request = {
+  //     placeId: p.place_id,
+  //     fields: ['name', 'formatted_address', 'place_id', 'geometry']
+  //   };
+  //   this.service.getDetails(request,(result, status)=>{
+  //     if (status === google.maps.places.PlacesServiceStatus.OK) {
+  //       //console.log('location ', result.geometry.location.lat())
+  //       let myOb ={}
+  //       let myPackage ={};
+  //       let lat = result.geometry.location.lat();
+  //       let lng = result.geometry.location.lng();
+  //       console.log('lat ',lat)
+  //       myOb = {lat:lat, lng: lng};
+  //       myPackage = {destination:{lat: lat, lng: lng},origin:{lat: this.myLocation.origin.lat, lng: this.myLocation.origin.lng}}
+  //       this.api.postResource('trips', myPackage)
+  //       .subscribe(resp=>{
+  //         //console.log('responce ', resp.body);
+  //         this.appStorage.storeTrip('activeTrip', resp)
+  //         .then((resp)=>{
+  //           this.loading.dismiss()
+  //           this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
+  //         })
 
-         // console.log(this.appStorage.getTrips('activeTrip'))
+  //        // console.log(this.appStorage.getTrips('activeTrip'))
 
-        })
-        //console.log('obj ', myOb)
+  //       })
+  //       //console.log('obj ', myOb)
 
-      //  this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
+  //     //  this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
       
 
 
 
+  //     }
+
+  //   })
+
+  // }
+
+  selectPlace(p){
+    console.log('selected ',p.description);
+    let origin = new google.maps.LatLng(this.myLocation.origin.lat, this.myLocation.origin.lng);
+    let service = new google.maps.DistanceMatrixService();
+    service.getDistanceMatrix({
+      origins:[origin],
+      destinations:[p.description],
+      travelMode: google.maps.TravelMode.DRIVING,
+    }, (resp, status)=>{
+      if(status == 'OK'){
+        this.appStorage.storeTrip('activeTrip', resp)
+        .then((resp)=>{
+          console.log('resp ', resp)
+        })
       }
 
     })
-
   }
   initializeMap(lat, lng){
     // console.log('initialize')
