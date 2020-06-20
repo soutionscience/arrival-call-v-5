@@ -40,7 +40,7 @@ export class SingleTrackingPage implements OnInit {
     private api: ApiService) {
     //console.log(this.navParams.data.homeGate)
     //this.place = this.navParams.data.
-    this.getDetails()
+   // this.getDetails()
    }
    
   ngOnInit() {
@@ -49,13 +49,15 @@ export class SingleTrackingPage implements OnInit {
 
   ionViewWillEnter(){
     this.createForm();
-    this.getTripDetails();
+   this.getTripDetails();
 
   }
   getTripDetails(){
     this.appStorage.getTrips('activeTrip')
     .then((resp)=>{
       this.activeTrip = resp;
+      this.place = this.activeTrip;
+      console.log('trip ', this.activeTrip)
       this.maxTripDuration = Math.floor(this.activeTrip.tripDuration.value/60)
     })
   }
@@ -71,25 +73,46 @@ export class SingleTrackingPage implements OnInit {
     console.log(this.place.name, 'lat ', this.place)})
    }
 
-   startTracking(){
-    this.watch = '';
-    //testing fence approximation
-    this.fence = this.calc.setFence(this.activeTrip, this.rangeForm.value.minRange)
-    this.backgroundMode.enable()
-    this. watch = this.geoLocation.watchPosition({ enableHighAccuracy: true });
-    this.watch.subscribe((data)=>{
-      let current = {lat:data.coords.latitude, lng: data.coords.longitude };
+  //  startTracking(){
+  //   this.watch = '';
+  //   //testing fence approximation
+  //   this.fence = this.calc.setFence(this.activeTrip, this.rangeForm.value.minRange)
+  //   this.backgroundMode.enable()
+  //   this. watch = this.geoLocation.watchPosition({ enableHighAccuracy: true });
+  //   this.watch.subscribe((data)=>{
+  //     let current = {lat:data.coords.latitude, lng: data.coords.longitude };
    
-   this.distance.push(this.calc.calculateRadius(this.place, current, this.fence))
+  //  this.distance.push(this.calc.calculateRadius(this.place, current, this.fence))
    
-   this.calc.calculateRadius(this.place, current, this.fence) <= this.fence? this.callClient(): this.message ='still tracking'
+  //  this.calc.calculateRadius(this.place, current, this.fence) <= this.fence? this.callClient(): this.message ='still tracking'
    
-      console.log('test ', this.calc.calculateRadius(this.place, current, this.rangeForm.value.minRange) )
-     this.positionLength = this.positions.length
-    });
+  //     console.log('test ', this.calc.calculateRadius(this.place, current, this.rangeForm.value.minRange) )
+  //    this.positionLength = this.positions.length
+  //   });
 
 
-   }
+  //  }
+
+startTracking(){
+  this.fence = this.calc.setFence(this.activeTrip, this.rangeForm.value.minRange)
+  //add fence to storage
+  this.appStorage.addFence('activeTrip', this.activeTrip, this.fence)
+  .then(resp=>{
+    //check if registed 
+    // if not register//
+    //otherwise post
+    // this.api.postResource('trips', resp)
+    // .subscribe(resp=>{
+
+    // })
+    console.log('trip ', resp)
+  })
+
+}
+// addFenceToStorage(){
+  
+// }
+
    stopWatch(){
    //  this.geoLocation.clearWatch(this.watch)
    }

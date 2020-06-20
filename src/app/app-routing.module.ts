@@ -5,7 +5,7 @@ const routes: Routes = [
 
   {
     path: '',
-    redirectTo:'tracking', 
+    redirectTo:'register', 
      pathMatch:'full'},
 
   {
@@ -23,6 +23,10 @@ const routes: Routes = [
   {
     path: 'success',
     loadChildren: () => import('./PAGES/success/success.module').then( m => m.SuccessPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./PAGES/register/register.module').then( m => m.RegisterPageModule)
   }
 ];
 @NgModule({

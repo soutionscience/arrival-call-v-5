@@ -9,5 +9,6 @@ export interface Trip{
     distance?: {value:number, text: string }
     tripDurationSec?: number,
     notification?: number,
-    active?:boolean
+    active?:boolean,
+    fence?:number
 }

@@ -34,6 +34,15 @@ async getTrips(key){
   return JSON.parse(trips.value)
 
 }
+// add fence
+addFence = async(key, trip: Trip, fence)=>{
+  //console.log('fence ', fence);
+  this.trip = trip;
+  this.trip.fence = fence;
+  await Storage.set({key: key, value: JSON.stringify(this.trip)});
+  return this.trip;
+
+}
 
 
 }
