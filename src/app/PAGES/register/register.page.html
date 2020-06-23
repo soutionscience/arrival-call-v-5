@@ -6,11 +6,23 @@
 
 <ion-content>
 
+
   <form [formGroup] ="regForm">
 <ion-item>
   <ion-label>Number</ion-label>
-  <ion-input formControlName="number"></ion-input>
+  <ion-select *ngIf="countries" formControlName="countryCode">
+   <ion-select-option *ngFor="let i of countries">+{{i.phoneCode}}</ion-select-option>
+  </ion-select>
+  <ion-input formControlName="phone"></ion-input>
 </ion-item>    
+<ion-item>
+  <ion-label>Email</ion-label>
+  <ion-input formControlName="email" placeholde="you@email.com"></ion-input>
+</ion-item>
+
+<ion-item position = "end">
+  <ion-button (click)="submit()" position="end">Submit</ion-button>
+</ion-item>
 
  
 

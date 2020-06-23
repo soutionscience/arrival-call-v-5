@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Trip } from '../SHARED/models/trip.model';
 import { Plugins } from '@capacitor/core';
 import { async } from '@angular/core/testing';
+import { country } from '../SHARED/models/country.model';
 const { Storage } = Plugins;
 
 
@@ -12,6 +13,7 @@ const { Storage } = Plugins;
 })
 export class AppStorageService {
   trip: Trip
+  countries: country []
 
   constructor() { }
   storeTrip= async (key, obj)=>{
@@ -41,6 +43,16 @@ addFence = async(key, trip: Trip, fence)=>{
   this.trip.fence = fence;
   await Storage.set({key: key, value: JSON.stringify(this.trip)});
   return this.trip;
+
+}
+
+
+///country storage stuff
+
+
+storeCountry = async(key, obj:country [])=>{
+  this.countries =obj
+  await Storage.set({key: key, value: JSON.stringify(this.countries)});
 
 }
 
