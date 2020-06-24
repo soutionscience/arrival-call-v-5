@@ -36,9 +36,9 @@ export class RegisterPage implements OnInit {
   }
   createForm(){
     this.regForm = this.fb.group(
-      {countryCode: ['+254', [Validators.required]],
-      phone: ['724604800', [Validators.required, Validators.minLength(9)]],
-      email: ['marshnjagi@yahoo.com', [Validators.required, Validators.email]]},
+      {countryCode: ['', [Validators.required]],
+      phone: ['', [Validators.required, Validators.minLength(9)]],
+      email: ['', [Validators.required, Validators.email]]},
     )
     this.confirmForm = this.fb.group(
       {code: ['', [Validators.required]]}
