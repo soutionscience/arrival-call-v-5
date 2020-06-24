@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from 'src/app/SERVICES/api.service';
 import { country } from 'src/app/SHARED/models/country.model';
 import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
+import { User } from 'src/app/SHARED/models/user.model';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-register',
@@ -11,10 +13,17 @@ import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
 })
 export class RegisterPage implements OnInit {
   regForm: FormGroup;
+  confirmForm: FormGroup;
   unsavedCountries: country []
-  countries: country []
+  countries: country [];
+  showRegistration: Boolean = true;
+  showConfirmation: Boolean = false;
+  user:User;
+  loading:any;
 
-  constructor(private fb: FormBuilder, private api: ApiService, private appStorage: AppStorageService) { }
+  constructor(private fb: FormBuilder, private api: ApiService, 
+    private appStorage: AppStorageService,
+    private loadingController: LoadingController) { }
 
   ngOnInit() {
     this.createForm()
@@ -27,9 +36,13 @@ export class RegisterPage implements OnInit {
   }
   createForm(){
     this.regForm = this.fb.group(
-      {countryCode: ['', [Validators.required]],
-      phone: ['', [Validators.required, Validators.minLength(9)]],
-      email: ['', [Validators.required, Validators.email]]},
+      {countryCode: ['+254', [Validators.required]],
+      phone: ['724604800', [Validators.required, Validators.minLength(9)]],
+      email: ['marshnjagi@yahoo.com', [Validators.required, Validators.email]]},
+    )
+    this.confirmForm = this.fb.group(
+      {code: ['', [Validators.required]]}
+      
     )
   }
 
@@ -50,9 +63,46 @@ export class RegisterPage implements OnInit {
 
   }
   submit(){
-    console.log('submit', this.regForm.value)
+    this.presentLoading()
+    //console.log('submit', this.regForm.value)
     this.api.postResource('users', this.regForm.value)
-    .subscribe(resp=> console.log('resp ', resp))
+    .subscribe(resp=> {
+      this.user = resp;
+      this.appStorage.storeUser('user', this.user).then((resp)=>{
+        this.showRegistration = false;
+        this.showConfirmation = true;
+        this.loading.dismiss()
+
+      })
+    
+  
+    })
+  }
+
+  confirm(){
+    //console.log('confirm ', this.user._id, 'code ', this.confirmForm.value)
+    this.presentLoading()
+
+this.api.postSpecificResource('users', this.user._id, 'verify',this.confirmForm.value)
+.subscribe(resp=>{
+  this.user = resp;
+  this.appStorage.storeUser('user',this.user).then((resp)=>{
+    this.loading.dismiss()
+  })
+ 
+})
+  }
+
+  async presentLoading() {
+    this.loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: 'Please wait...'
+      // duration: 2000
+    });
+    await this.loading.present();
+
+    const { role, data } = await this.loading.onDidDismiss();
+    //.log('Loading dismissed!');
   }
 
 }

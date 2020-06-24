@@ -195,7 +195,7 @@ export class TrackingPage implements OnInit {
     await this.loading.present();
 
     const { role, data } = await this.loading.onDidDismiss();
-    console.log('Loading dismissed!');
+    //.log('Loading dismissed!');
   }
 
 }

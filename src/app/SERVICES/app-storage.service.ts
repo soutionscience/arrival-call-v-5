@@ -4,6 +4,7 @@ import { Trip } from '../SHARED/models/trip.model';
 import { Plugins } from '@capacitor/core';
 import { async } from '@angular/core/testing';
 import { country } from '../SHARED/models/country.model';
+import { User } from '../SHARED/models/user.model';
 const { Storage } = Plugins;
 
 
@@ -13,7 +14,8 @@ const { Storage } = Plugins;
 })
 export class AppStorageService {
   trip: Trip
-  countries: country []
+  countries: country [];
+  user: User
 
   constructor() { }
   storeTrip= async (key, obj)=>{
@@ -53,6 +55,12 @@ addFence = async(key, trip: Trip, fence)=>{
 storeCountry = async(key, obj:country [])=>{
   this.countries =obj
   await Storage.set({key: key, value: JSON.stringify(this.countries)});
+
+}
+
+storeUser = async(key, user: User)=>{
+  this.user = user;
+  await Storage.set({key: key, value: JSON.stringify(this.user)})
 
 }
 

@@ -5,27 +5,41 @@
 </ion-header>
 
 <ion-content>
-
-
+  <div class="registration" *ngIf="showRegistration">
+    
   <form [formGroup] ="regForm">
-<ion-item>
-  <ion-label>Number</ion-label>
-  <ion-select *ngIf="countries" formControlName="countryCode">
-   <ion-select-option *ngFor="let i of countries">+{{i.phoneCode}}</ion-select-option>
-  </ion-select>
-  <ion-input formControlName="phone"></ion-input>
-</ion-item>    
-<ion-item>
-  <ion-label>Email</ion-label>
-  <ion-input formControlName="email" placeholde="you@email.com"></ion-input>
-</ion-item>
+    <ion-item>
+      <ion-label>Number</ion-label>
+      <ion-select *ngIf="countries" formControlName="countryCode">
+       <ion-select-option *ngFor="let i of countries">+{{i.phoneCode}}</ion-select-option>
+      </ion-select>
+      <ion-input formControlName="phone"></ion-input>
+    </ion-item>    
+    <ion-item>
+      <ion-label>Email</ion-label>
+      <ion-input formControlName="email" placeholde="you@email.com"></ion-input>
+    </ion-item>
+    
+    <ion-item position = "end">
+      <ion-button (click)="submit()" position="end">Submit</ion-button>
+    </ion-item>
+    
+     
+    
+      </form>
 
-<ion-item position = "end">
-  <ion-button (click)="submit()" position="end">Submit</ion-button>
-</ion-item>
+  </div>
+  <div class="confirmation" *ngIf="showConfirmation">
+    <form action="" [formGroup] ="confirmForm">
+      <ion-item>
+        <ion-label>Code</ion-label>
+        <ion-input formControlName ="code"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-button color="secondary" (click)="confirm()">Submit</ion-button>
+      </ion-item>
+    </form>
+  </div>
 
- 
-
-  </form>
 
 </ion-content>

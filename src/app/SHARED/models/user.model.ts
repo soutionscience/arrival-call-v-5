@@ -1,7 +1,9 @@
 export interface User{
-    number: string,
+    countryCode: string,
+    phone: string,
     plan: string,
     country: string,
-    language: string
+    language: string,
+    _id: string,
 
 }

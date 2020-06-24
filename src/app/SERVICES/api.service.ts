@@ -27,5 +27,8 @@ export class ApiService {
   getResource(route): Observable<any>{
     return this.restangular.all(route).getList()
   }
+  postSpecificResource(route, id, item, resource):Observable<any>{
+    return this.restangular.one(route, id).all(item).post(resource)
+  }
 
 }
