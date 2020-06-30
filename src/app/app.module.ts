@@ -12,6 +12,8 @@ import { RestangularModule } from 'ngx-restangular';
 import { restangularConfigFactory } from './SHARED/restangular.config';
 import { HttpClientModule } from '@angular/common/http';
 import { Storage, IonicStorageModule } from '@ionic/storage';
+import { VerifiedGuard } from './GUARDS/verified.guard';
+import { ActiveGuard } from './GUARDS/active.guard';
 
 
 @NgModule({
@@ -22,6 +24,8 @@ import { Storage, IonicStorageModule } from '@ionic/storage';
   providers: [
     StatusBar,
     SplashScreen,
+    VerifiedGuard,
+    ActiveGuard,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

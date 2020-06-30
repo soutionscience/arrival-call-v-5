@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { ConfirmPageRoutingModule } from './confirm-routing.module';
 
 import { ConfirmPage } from './confirm.page';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ConfirmPageRoutingModule
+    ConfirmPageRoutingModule,
   ],
+  providers:[Geolocation],
   declarations: [ConfirmPage]
 })
 export class ConfirmPageModule {}

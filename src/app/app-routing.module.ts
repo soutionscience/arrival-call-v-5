@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { VerifiedGuard } from './GUARDS/verified.guard';
+import { ActiveGuard } from './GUARDS/active.guard';
 
 const routes: Routes = [
 
   {
     path: '',
-    redirectTo:'register', 
+    redirectTo:'tracking', 
      pathMatch:'full'},
 
   {
@@ -27,8 +29,10 @@ const routes: Routes = [
   {
     path: 'register',
     loadChildren: () => import('./PAGES/register/register.module').then( m => m.RegisterPageModule)
-  },  {
+  },
+  {
     path: 'confirm',
+    canActivate:[VerifiedGuard, ActiveGuard],
     loadChildren: () => import('./PAGES/confirm/confirm.module').then( m => m.ConfirmPageModule)
   }
 

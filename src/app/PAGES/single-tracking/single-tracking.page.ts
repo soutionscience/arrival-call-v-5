@@ -53,7 +53,7 @@ export class SingleTrackingPage implements OnInit {
 
   }
   getTripDetails(){
-    this.appStorage.getTrips('activeTrip')
+    this.appStorage.getTrip('activeTrip')
     .then((resp)=>{
       this.activeTrip = resp;
       this.place = this.activeTrip;
@@ -96,8 +96,9 @@ export class SingleTrackingPage implements OnInit {
 startTracking(){
   this.fence = this.calc.setFence(this.activeTrip, this.rangeForm.value.minRange)
   //add fence to storage
-  this.appStorage.addFence('activeTrip', this.activeTrip, this.fence)
+  this.appStorage.addFence('activeTrip', this.activeTrip, this.fence, this.rangeForm.value.minRange)
   .then(resp=>{
+    this.navCtrl.navigateForward('/confirm')
     //check if registed 
     // if not register//
     //otherwise post
@@ -121,7 +122,7 @@ startTracking(){
      this.navCtrl.navigateBack('tracking')
    }
    callClient(){
-     console.log('calling client');
+     //console.log('calling client');
      this.watch = null;
 
      this.api.postResource('call', {'number': '+254724604800'}).subscribe(resp=>{

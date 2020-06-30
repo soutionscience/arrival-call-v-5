@@ -10,5 +10,6 @@ export interface Trip{
     tripDurationSec?: number,
     notification?: number,
     active?:boolean,
-    fence?:number
+    fence?:number,
+    fenceTime?: number
 }

@@ -4,7 +4,7 @@ import { ApiService } from 'src/app/SERVICES/api.service';
 import { country } from 'src/app/SHARED/models/country.model';
 import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
 import { User } from 'src/app/SHARED/models/user.model';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-register',
@@ -23,11 +23,13 @@ export class RegisterPage implements OnInit {
 
   constructor(private fb: FormBuilder, private api: ApiService, 
     private appStorage: AppStorageService,
-    private loadingController: LoadingController) { }
+    private loadingController: LoadingController,
+    private navCtr: NavController) { }
 
   ngOnInit() {
     this.createForm()
    this.getCountries()
+   
   }
   ionViewWillEnter(){
     this.createForm();
@@ -47,7 +49,7 @@ export class RegisterPage implements OnInit {
   }
 
   getCountries(){
-    this.appStorage.getTrips('countries')
+    this.appStorage.getTrip('countries')
     .then((resp)=>{
       if(resp) return this.countries = resp;
       if(resp == null){
@@ -87,6 +89,7 @@ this.api.postSpecificResource('users', this.user._id, 'verify',this.confirmForm.
 .subscribe(resp=>{
   this.user = resp;
   this.appStorage.storeUser('user',this.user).then((resp)=>{
+    this.navCtr.navigateForward('/confirm')
     this.loading.dismiss()
   })
  

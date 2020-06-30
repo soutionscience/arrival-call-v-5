@@ -33,16 +33,17 @@ export class AppStorageService {
   return this.trip;
 
 }
-async getTrips(key){
-  let trips = await Storage.get({key: key});
-  return JSON.parse(trips.value)
+async getTrip(key){
+  let trip = await Storage.get({key: key});
+  return JSON.parse(trip.value)
 
 }
 // add fence
-addFence = async(key, trip: Trip, fence)=>{
+addFence = async(key, trip: Trip, fence, fenceTime)=>{
   //console.log('fence ', fence);
   this.trip = trip;
   this.trip.fence = fence;
+  this.trip.fenceTime = fenceTime
   await Storage.set({key: key, value: JSON.stringify(this.trip)});
   return this.trip;
 
@@ -62,6 +63,30 @@ storeUser = async(key, user: User)=>{
   this.user = user;
   await Storage.set({key: key, value: JSON.stringify(this.user)})
 
+}
+
+//check if user is active
+isVerified = async()=>{
+  let user = await  Storage.get({key:'user'})
+ // console.log('user ', user)
+  if(user.value == null){
+    return false;
+
+  }else{
+    let verified = JSON.parse(user.value)
+    return verified.verified
+
+    
+  }
+
+}
+tripIsActive = async()=>{
+  let trip = await Storage.get({key:'activeTrip'})
+  if(trip.value == null){
+    return false;
+  }else{
+    return true;
+  }
 }
 
 

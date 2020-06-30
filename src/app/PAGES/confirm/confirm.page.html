@@ -1,9 +1,23 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>confirm</ion-title>
+  <ion-buttons slot="start">
+    <ion-back-button defaultHref="single-tracking"></ion-back-button>
+  </ion-buttons>
+</ion-toolbar>
+  <ion-toolbar>
+    <ion-title *ngIf="activeTrip">
+      {{activeTrip.destination.name}}
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-item *ngIf="activeTrip">
+    <p>We will call you {{activeTrip.fenceTime}} mins before you reach {{activeTrip.destination.name}}</p>
+  </ion-item>
+
+  <ion-item>
+    <ion-button slot="end" color="primary" (click)="confirm()" >Confirm</ion-button>
+  </ion-item>
 
 </ion-content>
