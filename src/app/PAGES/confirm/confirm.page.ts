@@ -4,6 +4,7 @@ import { User } from 'src/app/SHARED/models/user.model';
 import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { CalService } from 'src/app/SERVICES/cal.service';
+import { ApiService } from 'src/app/SERVICES/api.service';
 
 @Component({
   selector: 'app-confirm',
@@ -17,9 +18,10 @@ export class ConfirmPage implements OnInit {
   watch: any;
   messages: string
   distance: any []=[];
+  userNumber : string;
 
   constructor(private appStorage: AppStorageService, private geoLocation: Geolocation,
-    private cal: CalService ) { }
+    private cal: CalService, private api: ApiService ) { }
 
   ngOnInit() {
     this.getTripAndUser()
@@ -43,22 +45,34 @@ export class ConfirmPage implements OnInit {
 
   confirm(){
     console.log('fence ', this.place.fence)
-    this.watch = this.geoLocation.watchPosition({enableHighAccuracy: true})
-    this.watch.subscribe((data)=>{
+     this.watch = this.geoLocation.watchPosition({enableHighAccuracy: true})
+      this.watch.subscribe((data)=>{
       console.log('data ', data)
       let current = {lat:data.coords.latitude, lng: data.coords.longitude };
       
       this.distance.push(this.cal.calculateRadius(this.place.coords, current, this.place.fence));
-      this.cal.calculateRadius(this.place.coords, current, this.place.fence)<= this.place.fence?
-      this.callClient(): this.tracking()
+     if( this.cal.calculateRadius(this.place.coords, current, this.place.fence)<= this.place.fence){
+
+      this.callClient();
+
+     }else{
+      this.tracking()
+     }
+
 
     })
      
   }
 
   callClient(){
-    console.log('calling client ')
-    this.messages = "calling client"
+    this.userNumber = this.user.countryCode + this.user.phone 
+//console.log('calling client ', this.userNumber)
+    this.messages = "calling client";
+    
+    this.api.postResource('call', {'number': this.userNumber} )
+    .subscribe((resp)=>{
+      console.log('user called')
+    })
   }
   tracking(){
     console.log('tracking');
