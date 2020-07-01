@@ -8,7 +8,9 @@ import { NavController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { JsonPipe } from '@angular/common';
 import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
-import { isGeneratedFile } from '@angular/compiler/src/aot/util';
+
+
+import { Trip } from 'src/app/SHARED/models/trip.model';
 const homeGate = {lat:-1.257518, lng: 36.781870}
 const mainGate = {lat: -1.258889,  lng: 36.781700 }
 
@@ -27,6 +29,9 @@ export class TrackingPage implements OnInit {
   places: any []=[];
   map: any;
   myLocation: any;
+  ActiveTrip: any;
+  messages: any [] = [];
+  errors: any []=[];
 
 
   @ViewChild('map',{static:false}) mapElement: ElementRef
@@ -37,7 +42,7 @@ export class TrackingPage implements OnInit {
   constructor(private api: ApiService,private cacl: CalService,
      private geoLocation: Geolocation,
      private backgroundMode: BackgroundMode, 
-    //  private navCtr: NavController,
+    private navCtr: NavController,
      private router: Router,
      private appStorage: AppStorageService,
      private loadingController: LoadingController
@@ -84,7 +89,7 @@ export class TrackingPage implements OnInit {
 
   search(p){
     !p? this.reset():
-    this.service = new google.maps.places.AutocompleteService();
+    this.service = new google.maps.places.AutocompleteService() // check if you can filter
     this.service.getQueryPredictions({input: p}, (results, status)=>{
       if (status === google.maps.places.PlacesServiceStatus.OK) {
           this.places = results;
@@ -147,7 +152,7 @@ export class TrackingPage implements OnInit {
   // }
 
   selectPlace(p){
-   // console.log('selected ',p.description);
+   // console.log('selected ',p);
    this.presentLoading()
     let origin = new google.maps.LatLng(this.myLocation.origin.lat, this.myLocation.origin.lng);
     let service = new google.maps.DistanceMatrixService();
@@ -157,11 +162,42 @@ export class TrackingPage implements OnInit {
       travelMode: google.maps.TravelMode.DRIVING,
     }, (resp, status)=>{
       if(status == 'OK'){
-        this.appStorage.storeTrip('activeTrip', resp)
-        .then((resp)=>{
-          this.loading.dismiss();
-         this.router.navigate(['/single-tracking',])
-        })
+        //this.messages.push('distance matrix worked')
+        this.ActiveTrip = resp
+
+          let service = new google.maps.places.PlacesService(this.map);
+          let request = {
+            placeId: p.place_id,
+            fields: ['name', 'formatted_address', 'place_id', 'geometry']
+          }
+          service.getDetails(request, (result, status)=>{
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+              this.messages.push('service get details works')
+              let myOb ={}
+              let lat = result.geometry.location.lat();
+              let lng = result.geometry.location.lng();
+              myOb ={coords: {lat, lng}};
+              this.ActiveTrip.coords = {lat, lng}
+              this.appStorage.storeTrip('activeTrip', this.ActiveTrip)
+              .then((resp)=>{
+                //this.messages.push('saved resp')
+               // console.log('resp ', resp);
+                this.loading.dismiss();
+                this.navCtr.navigateForward('/single-tracking')
+                
+              })
+
+            }else{
+              //this.errors.push('error getting details')
+            }
+
+          })
+
+
+   
+      }else{
+        //error getting distance matrix
+      //  this.errors.push('errors getting distance matrix')
       }
 
     })

@@ -36,6 +36,13 @@
   </div>
 <ion-button (click)="track()">Start tracking</ion-button>
 
+<div *ngIf="messages">
+  <p *ngFor="let m of messages"> messages:{{m}}</p>
+</div>
+<div *ngIf="errors">
+  <p *ngFor="let e of errors">{{e}}</p>
+</div>
+
 <div class="places">
   <p>{{positionLength}}</p>
   <ion-item *ngIf="positions">

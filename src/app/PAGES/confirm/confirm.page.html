@@ -20,4 +20,15 @@
     <ion-button slot="end" color="primary" (click)="confirm()" >Confirm</ion-button>
   </ion-item>
 
+<ion-item *ngIf="messages">
+ <p>{{messages}}</p>
+</ion-item>
+
+<ion-item *ngIf="place"> Fence: {{place.fence}}</ion-item>
+
+<ion-item *ngIf="distance">
+distance:   {{distance}}
+</ion-item>
+
+
 </ion-content>

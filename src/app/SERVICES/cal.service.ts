@@ -10,7 +10,7 @@ export class CalService {
   constructor() { }
 
   calculateRadius(coords1, coords2, fence){
-    //console.log('called ', fence)
+    console.log('called ', coords1, ' 2 ', coords2)
    const toRad=(x)=>{
       return  x* Math.PI/180;
     }
@@ -34,6 +34,7 @@ export class CalService {
      let d = R*c;
     // console.log('what is d ', d)
    //return d<=fence? true: false
+  // console.log('d ', d, 'and fence is ', fence)
      return d;
 
 
@@ -48,6 +49,6 @@ export class CalService {
     setFence(trip: Trip, time){
       let estimatedSpeed = trip.distance.value/(trip.tripDuration.value/60);
       let actualFence = estimatedSpeed * time;
-      return actualFence/1000
+      return (actualFence/1000) + 2
     }
 }

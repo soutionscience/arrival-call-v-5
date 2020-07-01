@@ -5,6 +5,10 @@ export interface Trip{
     destination:{
         name: string
     },
+    coords?:{
+        lat: number,
+        lgn:number
+    }
     tripDuration?: {value: number, text: string},
     distance?: {value:number, text: string }
     tripDurationSec?: number,

@@ -26,6 +26,7 @@ export class AppStorageService {
     destination:{name: o.destinationAddresses[0] },
     tripDuration: {text: o.rows[0].elements[0].duration.text, value:o.rows[0].elements[0].duration.value },
     tripDurationSec:o.rows[0].elements[0].duration.value,
+    coords:o.coords,
     distance:{text:o.rows[0].elements[0].distance.text, value: o.rows[0].elements[0].distance.value}
   }
   this.trip =trip
