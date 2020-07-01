@@ -2,9 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { Trip } from 'src/app/SHARED/models/trip.model';
 import { User } from 'src/app/SHARED/models/user.model';
 import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
+//import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { CalService } from 'src/app/SERVICES/cal.service';
 import { ApiService } from 'src/app/SERVICES/api.service';
+import { Plugins } from '@capacitor/core';
+
+const { Geolocation } = Plugins;
+
 
 @Component({
   selector: 'app-confirm',
@@ -20,7 +24,7 @@ export class ConfirmPage implements OnInit {
   distance: any []=[];
   userNumber : string;
 
-  constructor(private appStorage: AppStorageService, private geoLocation: Geolocation,
+  constructor(private appStorage: AppStorageService,
     private cal: CalService, private api: ApiService ) { }
 
   ngOnInit() {
@@ -44,25 +48,46 @@ export class ConfirmPage implements OnInit {
   }
 
   confirm(){
-    console.log('fence ', this.place.fence)
-     this.watch = this.geoLocation.watchPosition({enableHighAccuracy: true})
-      this.watch.subscribe((data)=>{
-      console.log('data ', data)
+    this.watch = Geolocation.watchPosition({}, (data, err)=>{
+      if(err) console.log(err)
       let current = {lat:data.coords.latitude, lng: data.coords.longitude };
+      if( this.cal.calculateRadius(this.place.coords, current, this.place.fence)<= this.place.fence){
+        this.stop();
+        this.callClient()
+      }else{
+        this.tracking()
+
+      }
+    
       
-      this.distance.push(this.cal.calculateRadius(this.place.coords, current, this.place.fence));
-     if( this.cal.calculateRadius(this.place.coords, current, this.place.fence)<= this.place.fence){
-
-      this.callClient();
-
-     }else{
-      this.tracking()
-     }
-
-
     })
-     
+
   }
+  stop(){
+    //console.log('stop called')
+    Geolocation.clearWatch({id: this.watch})
+  }
+
+  // confirm(){
+  //   console.log('fence ', this.place.fence)
+  //    this.watch = Geolocation.watchPosition({enableHighAccuracy: true})
+  //     this.watch.subscribe((data)=>{
+  //     console.log('data ', data)
+  //     let current = {lat:data.coords.latitude, lng: data.coords.longitude };
+      
+  //     this.distance.push(this.cal.calculateRadius(this.place.coords, current, this.place.fence));
+  //    if( this.cal.calculateRadius(this.place.coords, current, this.place.fence)<= this.place.fence){
+
+  //     this.callClient();
+
+  //    }else{
+  //     this.tracking()
+  //    }
+
+
+  //   })
+     
+  // }
 
   callClient(){
     this.userNumber = this.user.countryCode + this.user.phone 
