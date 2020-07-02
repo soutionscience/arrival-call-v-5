@@ -58,7 +58,7 @@ export class SingleTrackingPage implements OnInit {
       this.activeTrip = resp;
       this.place = this.activeTrip;
       console.log('trip ', this.activeTrip)
-      this.maxTripDuration = Math.floor(this.activeTrip.tripDuration.value/60)
+      this.maxTripDuration = Math.floor(this.activeTrip.tripDuration.value/60) +1
     })
   }
   createForm(){

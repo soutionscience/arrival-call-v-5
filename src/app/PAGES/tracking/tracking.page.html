@@ -43,17 +43,7 @@
   <p *ngFor="let e of errors">{{e}}</p>
 </div>
 
-<div class="places">
-  <p>{{positionLength}}</p>
-  <ion-item *ngIf="positions">
- 
-    <div>
-    <p *ngFor="let item of positions"> {{item.coords1}}  {{item.coord2}}</p>
-    </div>
-  </ion-item>
-</div>
 
-<div class="button">
-  <ion-button (click)="homeGate()">Home Gate</ion-button>
-</div>
+
+
 </ion-content>

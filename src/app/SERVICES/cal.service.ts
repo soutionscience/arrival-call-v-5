@@ -49,6 +49,6 @@ export class CalService {
     setFence(trip: Trip, time){
       let estimatedSpeed = trip.distance.value/(trip.tripDuration.value/60);
       let actualFence = estimatedSpeed * time;
-      return (actualFence/1000) + 2
+      return (actualFence/1000)
     }
 }

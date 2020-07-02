@@ -162,7 +162,7 @@ export class TrackingPage implements OnInit {
       travelMode: google.maps.TravelMode.DRIVING,
     }, (resp, status)=>{
       if(status == 'OK'){
-        //this.messages.push('distance matrix worked')
+        this.messages.push('calculating...')
         this.ActiveTrip = resp
 
           let service = new google.maps.places.PlacesService(this.map);
@@ -180,15 +180,16 @@ export class TrackingPage implements OnInit {
               this.ActiveTrip.coords = {lat, lng}
               this.appStorage.storeTrip('activeTrip', this.ActiveTrip)
               .then((resp)=>{
-                //this.messages.push('saved resp')
+                this.messages.push('saved resp')
                // console.log('resp ', resp);
-                this.loading.dismiss();
+                 this.loading.dismiss();
                 this.navCtr.navigateForward('/single-tracking')
+                this.loading.dismiss()
                 
               })
 
             }else{
-              //this.errors.push('error getting details')
+              this.errors.push('error getting details')
             }
 
           })
@@ -197,7 +198,7 @@ export class TrackingPage implements OnInit {
    
       }else{
         //error getting distance matrix
-      //  this.errors.push('errors getting distance matrix')
+        this.errors.push('errors getting distance matrix')
       }
 
     })
