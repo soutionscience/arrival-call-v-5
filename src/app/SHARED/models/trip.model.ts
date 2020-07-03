@@ -16,4 +16,5 @@ export interface Trip{
     active?:boolean,
     fence?:number,
     fenceTime?: number
+    place_id?:string
 }

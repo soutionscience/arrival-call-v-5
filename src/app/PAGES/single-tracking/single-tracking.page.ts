@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavParams, NavController } from '@ionic/angular';
+import { NavParams, NavController, LoadingController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { CalService } from 'src/app/SERVICES/cal.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
@@ -8,9 +8,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
 import { Trip } from 'src/app/SHARED/models/trip.model';
 import { ApiService } from 'src/app/SERVICES/api.service';
-const mainGate = {lat: -1.258889,  lng: 36.781700 }
-const grMathenge ={lat:-1.253677, lng:36.799868}
-const embu = {lat:-0.533461, lng:37.450854}
+import{} from 'google-maps';
 
 @Component({
   selector: 'app-single-tracking',
@@ -28,6 +26,8 @@ export class SingleTrackingPage implements OnInit {
   activeTrip: Trip;
   maxTripDuration: number //add hours and stuff
   fence:number;
+  loading: any
+  map: any
 
   constructor(private navParams: NavParams, 
     private route: ActivatedRoute, 
@@ -37,7 +37,8 @@ export class SingleTrackingPage implements OnInit {
     private navCtrl: NavController,
     private fb: FormBuilder,
     private appStorage: AppStorageService,
-    private api: ApiService) {
+    private api: ApiService,
+    private loadingController: LoadingController) {
     //console.log(this.navParams.data.homeGate)
     //this.place = this.navParams.data.
    // this.getDetails()
@@ -94,20 +95,11 @@ export class SingleTrackingPage implements OnInit {
   //  }
 
 startTracking(){
-  this.fence = this.calc.setFence(this.activeTrip, this.rangeForm.value.minRange)
-  //add fence to storage
-  this.appStorage.addFence('activeTrip', this.activeTrip, this.fence, this.rangeForm.value.minRange)
-  .then(resp=>{
-    this.navCtrl.navigateForward('/confirm')
-    //check if registed 
-    // if not register//
-    //otherwise post
-    // this.api.postResource('trips', resp)
-    // .subscribe(resp=>{
 
-    // })
-    console.log('trip ', resp)
-  })
+  //adding coords to trip
+  this.getCoords(this.activeTrip)
+
+
 
 }
 // addFenceToStorage(){
@@ -131,7 +123,60 @@ startTracking(){
      }
       )
    }
-   
+
+   getCoords(p){
+    let service = new google.maps.places.PlacesService(this.map);
+    let request = {
+      placeId: p.place_id,
+      fields: ['name', 'formatted_address', 'place_id', 'geometry']
+    }
+     service.getDetails(request, (result, status)=>{
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+              //this.messages.push('service get details works')
+              let myOb ={}
+              let lat = result.geometry.location.lat();
+              let lgn = result.geometry.location.lng();
+              myOb ={coords: {lat, lgn}};
+              this.activeTrip.coords = {lat, lgn}
+              this.appStorage.storeTrip('activeTrip', this.activeTrip)
+              .then((resp)=>{
+                this.fence = this.calc.setFence(this.activeTrip, this.rangeForm.value.minRange)
+                //add fence to storage
+                this.appStorage.addFence('activeTrip', this.activeTrip, this.fence, this.rangeForm.value.minRange)
+                .then(resp=>{
+                  this.navCtrl.navigateForward('/confirm')
+                  //check if registed 
+                  // if not register//
+                  //otherwise post
+                  // this.api.postResource('trips', resp)
+                  // .subscribe(resp=>{
+              
+                  // })
+                  console.log('trip ', resp)
+                })
+                
+              })
+
+            }else{
+              return "error"
+            }
+
+          })
+
+
+  }
+
+   async presentLoading() {
+    this.loading = await this.loadingController.create({
+      cssClass: 'my-custom-class',
+      message: 'Please wait...'
+      // duration: 2000
+    });
+    await this.loading.present();
+
+    const { role, data } = await this.loading.onDidDismiss();
+    //.log('Loading dismissed!');
+  }
   
 
 

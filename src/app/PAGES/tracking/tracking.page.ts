@@ -162,43 +162,18 @@ export class TrackingPage implements OnInit {
       travelMode: google.maps.TravelMode.DRIVING,
     }, (resp, status)=>{
       if(status == 'OK'){
-        this.messages.push('calculating...')
-        this.ActiveTrip = resp
+        this.messages.push('distance matrix worked')
+        this.ActiveTrip = resp;
+      
+        this.navCtr.navigateForward('/single-tracking');
+        this.loading.dismiss();
 
-          let service = new google.maps.places.PlacesService(this.map);
-          let request = {
-            placeId: p.place_id,
-            fields: ['name', 'formatted_address', 'place_id', 'geometry']
-          }
-          service.getDetails(request, (result, status)=>{
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-              this.messages.push('service get details works')
-              let myOb ={}
-              let lat = result.geometry.location.lat();
-              let lng = result.geometry.location.lng();
-              myOb ={coords: {lat, lng}};
-              this.ActiveTrip.coords = {lat, lng}
-              this.appStorage.storeTrip('activeTrip', this.ActiveTrip)
-              .then((resp)=>{
-                this.messages.push('saved resp')
-               // console.log('resp ', resp);
-                 this.loading.dismiss();
-                this.navCtr.navigateForward('/single-tracking')
-                this.loading.dismiss()
-                
-              })
-
-            }else{
-              this.errors.push('error getting details')
-            }
-
-          })
-
-
+    
+         
    
       }else{
         //error getting distance matrix
-        this.errors.push('errors getting distance matrix')
+       this.errors.push('errors getting distance matrix')
       }
 
     })
@@ -226,13 +201,15 @@ export class TrackingPage implements OnInit {
    async presentLoading() {
     this.loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
-      message: 'Please wait...'
-      // duration: 2000
+      message: 'Please wait...',
+      duration: 0
     });
     await this.loading.present();
 
     const { role, data } = await this.loading.onDidDismiss();
-    //.log('Loading dismissed!');
+    console.log('Loading dismissed!');
   }
+
+
 
 }
