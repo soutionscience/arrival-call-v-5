@@ -8,6 +8,7 @@ import { ConfirmPageRoutingModule } from './confirm-routing.module';
 
 import { ConfirmPage } from './confirm.page';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 
 @NgModule({
   imports: [
@@ -16,7 +17,7 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
     IonicModule,
     ConfirmPageRoutingModule,
   ],
-  providers:[Geolocation],
+  providers:[Geolocation, BackgroundMode],
   declarations: [ConfirmPage]
 })
 export class ConfirmPageModule {}

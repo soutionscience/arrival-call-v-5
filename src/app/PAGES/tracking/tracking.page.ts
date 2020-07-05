@@ -2,17 +2,16 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from 'src/app/SERVICES/api.service';
 import { CalService } from 'src/app/SERVICES/cal.service';
 import{} from 'google-maps';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
+//import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { NavController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { JsonPipe } from '@angular/common';
 import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
-
-
 import { Trip } from 'src/app/SHARED/models/trip.model';
-const homeGate = {lat:-1.257518, lng: 36.781870}
-const mainGate = {lat: -1.258889,  lng: 36.781700 }
+import { Plugins } from '@capacitor/core';
+
+const { Geolocation } = Plugins;
 
 
 @Component({
@@ -29,7 +28,7 @@ export class TrackingPage implements OnInit {
   places: any []=[];
   map: any;
   myLocation: any;
-  ActiveTrip: any;
+  activeTrip: any;
   messages: any [] = [];
   errors: any []=[];
 
@@ -40,7 +39,7 @@ export class TrackingPage implements OnInit {
   loading: any;
 
   constructor(private api: ApiService,private cacl: CalService,
-     private geoLocation: Geolocation,
+    //  private geoLocation: Geolocation,
      private backgroundMode: BackgroundMode, 
     private navCtr: NavController,
      private router: Router,
@@ -50,41 +49,36 @@ export class TrackingPage implements OnInit {
      ) { }
 
   ngOnInit() {
+   // this.getMyLocation()
+   this.getCurrentLocation();
+  
 
   }
   ionViewWillEnter(){
-    this.getMyLocation()
+    this.getCurrentLocation()
   }
-  getMyLocation(){
-    this.geoLocation.getCurrentPosition()
-    .then((resp)=>{
-      let myOb = {}
+  getCurrentLocation(){
+    this.messages.push('get myLocation called')
+    this.getCurrentPosition().then((resp)=>{
+        let myOb = {}
       let lat = resp.coords.latitude;
       let lng = resp.coords.longitude;
+      this.initializeMap(lat, lng)
       myOb = {origin: {lat:lat, lng: lng}}
       this.myLocation = myOb;
-      //console.log('got location ', myOb)
-      //this.locationsPacket.push(myOb)
-
-      this.initializeMap(lat, lng);
-
+      this.messages.push(this.myLocation.origin.lat)
     }).catch((error)=>{
-      console.log('error geting location', error)
+      console.log('error getting location')
+      this.errors.push(error)
     })
 
-
-    
   }
-  track(){
-    this.backgroundMode.enable()
-    let watch = this.geoLocation.watchPosition();
-    watch.subscribe((data)=>{
-
-      this.positions.push(this.cacl.tester(data.coords.latitude, data.coords.latitude))
-     this.positionLength = this.positions.length
-    });
-
+  async getCurrentPosition() {
+    const coordinates = await Geolocation.getCurrentPosition();
+    return coordinates
   }
+
+
 
 
   search(p){
@@ -104,69 +98,30 @@ export class TrackingPage implements OnInit {
 
   }
 
-  homeGate(){
-   this.router.navigate(['/single-tracking', {homeGate}])
-  }
-  // selectPlace(p){
-  //  console.log('selected ', p);
-  //  this.presentLoading()
-  //   this.service = new google.maps.places.PlacesService(this.map);
-  //   //console.log('service ', this.service)
-  //   var request = {
-  //     placeId: p.place_id,
-  //     fields: ['name', 'formatted_address', 'place_id', 'geometry']
-  //   };
-  //   this.service.getDetails(request,(result, status)=>{
-  //     if (status === google.maps.places.PlacesServiceStatus.OK) {
-  //       //console.log('location ', result.geometry.location.lat())
-  //       let myOb ={}
-  //       let myPackage ={};
-  //       let lat = result.geometry.location.lat();
-  //       let lng = result.geometry.location.lng();
-  //       console.log('lat ',lat)
-  //       myOb = {lat:lat, lng: lng};
-  //       myPackage = {destination:{lat: lat, lng: lng},origin:{lat: this.myLocation.origin.lat, lng: this.myLocation.origin.lng}}
-  //       this.api.postResource('trips', myPackage)
-  //       .subscribe(resp=>{
-  //         //console.log('responce ', resp.body);
-  //         this.appStorage.storeTrip('activeTrip', resp)
-  //         .then((resp)=>{
-  //           this.loading.dismiss()
-  //           this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
-  //         })
-
-  //        // console.log(this.appStorage.getTrips('activeTrip'))
-
-  //       })
-  //       //console.log('obj ', myOb)
-
-  //     //  this.router.navigate(['/single-tracking', {lat: lat, lng:lng, name: result.name}])
-      
 
 
-
-  //     }
-
-  //   })
-
-  // }
 
   selectPlace(p){
-   // console.log('selected ',p);
-   this.presentLoading()
+    this.presentLoading() 
+     this.messages.push(p.description)
     let origin = new google.maps.LatLng(this.myLocation.origin.lat, this.myLocation.origin.lng);
-    let service = new google.maps.DistanceMatrixService();
+    this.messages.push('lat:  ' + this.myLocation.origin.lat);
+    this.messages.push('lng:  ' + this.myLocation.origin.lng)
+    this.messages.push('origin: ', origin)
+ let service = new google.maps.DistanceMatrixService();
+ this.messages.push(service)
     service.getDistanceMatrix({
       origins:[origin],
       destinations:[p.description],
       travelMode: google.maps.TravelMode.DRIVING,
     }, (resp, status)=>{
       if(status == 'OK'){
-        this.messages.push('distance matrix worked')
-        this.ActiveTrip = resp;
+        //this.messages.push('distance matrix worked')
+        this.activeTrip = resp;
+        this.getCoords(p)
       
-        this.navCtr.navigateForward('/single-tracking');
-        this.loading.dismiss();
+      //  this.navCtr.navigateForward('/single-tracking');
+      //  this.loading.dismiss();
 
     
          
@@ -177,6 +132,15 @@ export class TrackingPage implements OnInit {
       }
 
     })
+  }
+
+  selectPlace2(p){
+    this.presentLoading();
+    this.messages.push('select 2');
+    this.navCtr.navigateForward('/single-tracking');
+    this.loading.dismiss();
+
+
   }
   initializeMap(lat, lng){
     // console.log('initialize')
@@ -208,6 +172,35 @@ export class TrackingPage implements OnInit {
 
     const { role, data } = await this.loading.onDidDismiss();
     console.log('Loading dismissed!');
+  }
+
+  getCoords(p){
+    let service = new google.maps.places.PlacesService(this.map);
+    let request = {
+      placeId: p.place_id,
+      fields: ['name', 'formatted_address', 'place_id', 'geometry']
+    }
+     service.getDetails(request, (result, status)=>{
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+              //this.messages.push('service get details works')
+              let myOb ={}
+              let lat = result.geometry.location.lat();
+              let lng = result.geometry.location.lng();
+              myOb ={coords: {lat, lng}};
+              this.activeTrip.coords = {lat, lng}
+              this.appStorage.storeTrip('activeTrip', this.activeTrip)
+              .then((resp)=>{
+                this.navCtr.navigateForward('/single-tracking');
+                this.loading.dismiss();
+              })
+
+            }else{
+              return "error"
+            }
+
+          })
+
+
   }
 
 

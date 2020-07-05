@@ -20,15 +20,50 @@
     <ion-button slot="end" color="primary" (click)="confirm()" >Confirm</ion-button>
   </ion-item>
 
-<ion-item *ngIf="messages">
- <p>{{messages}}</p>
-</ion-item>
+
 
 <ion-item *ngIf="place"> Fence: {{place.fence}}</ion-item>
 
-<ion-item *ngIf="distance">
-distance:   {{distance}}
-</ion-item>
+
+<ion-grid>
+  <ion-row>
+    <ion-col>
+      <div>
+        lat
+      </div>
+    </ion-col>
+    <ion-col>
+      <div>
+        lgn
+      </div>
+    </ion-col>
+    <ion-col>
+      <div>
+        message
+      </div>
+    </ion-col>
+    <ion-col>
+      <div>
+        distance
+      </div>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col *ngIf="current">
+  <div *ngFor="let c of current">{{c.lat  | number : '1.2-2'}}</div>
+    </ion-col>
+    <ion-col *ngIf="current">
+      <div *ngFor="let c of current">{{c.lng | number : '1.2-2'}}</div>
+        </ion-col>
+        <ion-col *ngIf="messages">
+          <div *ngFor="let m of messages">{{m}}</div>
+            </ion-col>
+            <ion-col *ngIf="distance">
+              <div *ngFor="let d of distance">{{d | number : '1.2-2'}}</div>
+                </ion-col>
+  </ion-row>
+  
+</ion-grid>
 
 
 </ion-content>

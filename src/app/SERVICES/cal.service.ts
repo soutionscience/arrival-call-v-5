@@ -34,7 +34,7 @@ export class CalService {
      let d = R*c;
     // console.log('what is d ', d)
    //return d<=fence? true: false
-  // console.log('d ', d, 'and fence is ', fence)
+  console.log('d ', d, 'and fence is ', fence,  'C ', c)
      return d;
 
 

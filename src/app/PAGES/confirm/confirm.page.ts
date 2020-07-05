@@ -6,6 +6,8 @@ import { AppStorageService } from 'src/app/SERVICES/app-storage.service';
 import { CalService } from 'src/app/SERVICES/cal.service';
 import { ApiService } from 'src/app/SERVICES/api.service';
 import { Plugins } from '@capacitor/core';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+
 
 const { Geolocation } = Plugins;
 
@@ -20,12 +22,15 @@ export class ConfirmPage implements OnInit {
   place: Trip;
   user: User
   watch: any;
-  messages: string
+  messages: string [] =[]
   distance: any []=[];
   userNumber : string;
+  current: any []=[];
+  //distance: any []=[]
 
   constructor(private appStorage: AppStorageService,
-    private cal: CalService, private api: ApiService ) { }
+    private cal: CalService, private api: ApiService,
+    private background: BackgroundMode) { }
 
   ngOnInit() {
     this.getTripAndUser()
@@ -38,6 +43,7 @@ export class ConfirmPage implements OnInit {
   this.appStorage.getTrip('activeTrip')
   .then((resp)=>{
     this.activeTrip = resp;
+    console.log('active ', this.activeTrip)
     this.place = this.activeTrip;
     this.appStorage.getTrip('user')
     .then((resp)=>{
@@ -48,10 +54,13 @@ export class ConfirmPage implements OnInit {
   }
 
   confirm(){
+    this.background.enable()
     this.watch = Geolocation.watchPosition({}, (data, err)=>{
       if(err) console.log(err)
-      let current = {lat:data.coords.latitude, lng: data.coords.longitude };
-      console.log('calculated ',   this.cal.calculateRadius(this.place.coords, current, this.place.fence),' fence ', this.place.fence)
+      let current = {lat:data.coords.latitude, lng: data.coords.longitude }
+      this.addToArray(current);
+      //console.log('calculated ',   this.cal.calculateRadius(this.place.coords, current, this.place.fence),' fence ', this.place.fence)
+      this.distance.push( this.cal.calculateRadius(this.place.coords, current, this.place.fence))
       this.cal.calculateRadius(this.place.coords, current, this.place.fence) <= this.place.fence ?
       this.callClient(): this.tracking()
 
@@ -60,6 +69,15 @@ export class ConfirmPage implements OnInit {
     })
 
   }
+
+  addToArray(item){
+    if(this.current.length>5){
+      this.current.shift();
+      this.current.push(item)
+    }else{
+      this.current.push(item)
+    }
+  }
   stop(){
     //console.log('stop called')
     Geolocation.clearWatch({id: this.watch})
@@ -67,18 +85,20 @@ export class ConfirmPage implements OnInit {
  callClient(){
    this.stop()
    console.log('calling client')
+   this.messages.push( "calling client");
+   //this.messages.push()
     this.userNumber = this.user.countryCode + this.user.phone 
 //console.log('calling client ', this.userNumber)
-    this.messages = "calling client";
+  
     
-    // this.api.postResource('call', {'number': this.userNumber} )
-    // .subscribe((resp)=>{
-    //   console.log('user called')
-    // })
+    this.api.postResource('call', {'number': this.userNumber} )
+    .subscribe((resp)=>{
+      console.log('user called')
+    })
   }
   tracking(){
     console.log('tracking');
-    this.messages = "tracking"
+    this.messages.push("tracking")
   }
 
 }

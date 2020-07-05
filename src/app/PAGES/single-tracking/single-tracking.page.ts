@@ -39,9 +39,7 @@ export class SingleTrackingPage implements OnInit {
     private appStorage: AppStorageService,
     private api: ApiService,
     private loadingController: LoadingController) {
-    //console.log(this.navParams.data.homeGate)
-    //this.place = this.navParams.data.
-   // this.getDetails()
+
    }
    
   ngOnInit() {
@@ -94,85 +92,32 @@ export class SingleTrackingPage implements OnInit {
 
   //  }
 
-startTracking(){
 
-  //adding coords to trip
-  this.getCoords(this.activeTrip)
+  startTracking(){
+    this.presentLoading()
+    this.fence = this.calc.setFence(this.activeTrip, this.rangeForm.value.minRange)
+   // this.activeTrip.fence = this.fence;
+    this.appStorage.addFence('activeTrip', this.activeTrip, this.fence, this.rangeForm.value.minRange )
+    .then((resp)=>{
+      //this.loadingController.dismiss()
+      this.navCtrl.navigateForward('/confirm')
+      
+    })
+  }
 
-
-
-}
-// addFenceToStorage(){
-  
-// }
-
-   stopWatch(){
-   //  this.geoLocation.clearWatch(this.watch)
-   }
    back(){
      this.place ='';
      this.navCtrl.navigateBack('tracking')
    }
-   callClient(){
-     //console.log('calling client');
-     this.watch = null;
 
-     this.api.postResource('call', {'number': '+254724604800'}).subscribe(resp=>{
-      this.watch = null;
-      this.navCtrl.navigateForward('/success')
-     }
-      )
-   }
-
-   getCoords(p){
-    let service = new google.maps.places.PlacesService(this.map);
-    let request = {
-      placeId: p.place_id,
-      fields: ['name', 'formatted_address', 'place_id', 'geometry']
-    }
-     service.getDetails(request, (result, status)=>{
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-              //this.messages.push('service get details works')
-              let myOb ={}
-              let lat = result.geometry.location.lat();
-              let lgn = result.geometry.location.lng();
-              myOb ={coords: {lat, lgn}};
-              this.activeTrip.coords = {lat, lgn}
-              this.appStorage.storeTrip('activeTrip', this.activeTrip)
-              .then((resp)=>{
-                this.fence = this.calc.setFence(this.activeTrip, this.rangeForm.value.minRange)
-                //add fence to storage
-                this.appStorage.addFence('activeTrip', this.activeTrip, this.fence, this.rangeForm.value.minRange)
-                .then(resp=>{
-                  this.navCtrl.navigateForward('/confirm')
-                  //check if registed 
-                  // if not register//
-                  //otherwise post
-                  // this.api.postResource('trips', resp)
-                  // .subscribe(resp=>{
-              
-                  // })
-                  console.log('trip ', resp)
-                })
-                
-              })
-
-            }else{
-              return "error"
-            }
-
-          })
-
-
-  }
 
    async presentLoading() {
     this.loading = await this.loadingController.create({
       cssClass: 'my-custom-class',
-      message: 'Please wait...'
-      // duration: 2000
+      message: 'Please wait...',
+      duration: 500
     });
-    await this.loading.present();
+    return await this.loading.present();
 
     const { role, data } = await this.loading.onDidDismiss();
     //.log('Loading dismissed!');

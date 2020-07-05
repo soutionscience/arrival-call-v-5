@@ -22,8 +22,8 @@
     </ion-range>
 
   </ion-item>
-  <ion-label color="secondary" id="lbl">Time in Minutes</ion-label>
-  <ion-button (click)="startTracking()" color="secondary" id="cta">Track</ion-button>
+  <ion-label color="secondary" id="lbl">Time in Minutes: {{rangeForm.value.minRange}} </ion-label>
+  <ion-button (click)="startTracking()" color="secondary" id="cta">Confirm</ion-button>
 </div>
   <ion-item>{{rangeForm.value.minRange}} mins </ion-item>
   <ion-item>and fence distance is {{fence}} km</ion-item>

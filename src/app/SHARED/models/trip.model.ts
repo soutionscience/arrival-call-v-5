@@ -7,7 +7,7 @@ export interface Trip{
     },
     coords?:{
         lat: number,
-        lgn:number
+        lng:number
     }
     tripDuration?: {value: number, text: string},
     distance?: {value:number, text: string }
