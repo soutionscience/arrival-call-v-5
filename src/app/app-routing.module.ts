@@ -32,7 +32,7 @@ const routes: Routes = [
   },
   {
     path: 'confirm',
-    canActivate:[VerifiedGuard, ActiveGuard],
+    //canActivate:[VerifiedGuard, ActiveGuard],
     loadChildren: () => import('./PAGES/confirm/confirm.module').then( m => m.ConfirmPageModule)
   }
 

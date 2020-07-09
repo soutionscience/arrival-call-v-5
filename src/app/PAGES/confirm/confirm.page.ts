@@ -7,6 +7,10 @@ import { CalService } from 'src/app/SERVICES/cal.service';
 import { ApiService } from 'src/app/SERVICES/api.service';
 import { Plugins } from '@capacitor/core';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+//import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { NavController } from '@ionic/angular';
+import { Insomnia } from '@ionic-native/insomnia/ngx';
+
 
 
 const { Geolocation } = Plugins;
@@ -22,15 +26,19 @@ export class ConfirmPage implements OnInit {
   place: Trip;
   user: User
   watch: any;
-  messages: string [] =[]
+  messages: any [] =[]
   distance: any []=[];
   userNumber : string;
   current: any []=[];
+timer: any []= []
   //distance: any []=[]
 
   constructor(private appStorage: AppStorageService,
     private cal: CalService, private api: ApiService,
-    private background: BackgroundMode) { }
+    private background: BackgroundMode,
+    //private geolocation: Geolocation,
+    private navCtr: NavController,
+    private insomnia: Insomnia) { }
 
   ngOnInit() {
     this.getTripAndUser()
@@ -54,25 +62,46 @@ export class ConfirmPage implements OnInit {
   }
 
   confirm(){
-    this.background.enable()
-    this.watch = Geolocation.watchPosition({}, (data, err)=>{
-      if(err) console.log(err)
-      let current = {lat:data.coords.latitude, lng: data.coords.longitude }
-      this.addToArray(current);
-      //console.log('calculated ',   this.cal.calculateRadius(this.place.coords, current, this.place.fence),' fence ', this.place.fence)
-      this.distance.push( this.cal.calculateRadius(this.place.coords, current, this.place.fence))
-      this.cal.calculateRadius(this.place.coords, current, this.place.fence) <= this.place.fence ?
-      this.callClient(): this.tracking()
-
-    
+    this.insomnia.keepAwake()
+    .then(()=>{
+      this.watch = Geolocation.watchPosition({}, (data, err)=>{
+        if(err) console.log(err)
+        let current = {lat:data.coords.latitude, lng: data.coords.longitude }
+        this.addToArray(current);
+        //console.log('calculated ',   this.cal.calculateRadius(this.place.coords, current, this.place.fence),' fence ', this.place.fence)
+        this.distance.push( this.cal.calculateRadius(this.place.coords, current, this.place.fence))
+        this.cal.calculateRadius(this.place.coords, current, this.place.fence) <= this.place.fence ?
+        this.callClient(): this.tracking()
+  
       
+        
+      })
+
     })
 
+
   }
+  // confirm(){
+  //   this.insomnia.keepAwake()
+  //   .then(()=>{
+  //     this.watch = this.geolocation.watchPosition()
+  //     this.watch.subscribe((data)=>{
+  //       let current = {lat:data.coords.latitude, lng: data.coords.longitude };
+  //       this.addToArray(current);
+  //       this.distance.push( this.cal.calculateRadius(this.place.coords, current, this.place.fence))
+  //       this.cal.calculateRadius(this.place.coords, current, this.place.fence) <= this.place.fence ?
+  //      this.callClient(): this.tracking()
+  
+  //     })
+
+  //   })
+
+
+  // }
 
   addToArray(item){
     if(this.current.length>5){
-      this.current.shift();
+     // this.current.shift();
       this.current.push(item)
     }else{
       this.current.push(item)
@@ -80,25 +109,30 @@ export class ConfirmPage implements OnInit {
   }
   stop(){
     //console.log('stop called')
-    Geolocation.clearWatch({id: this.watch})
+  //  this.watch.unsubscribe()
+  Geolocation.clearWatch({id:this.watch})
   }
  callClient(){
-   this.stop()
-   console.log('calling client')
+   let date =  Date.now()
+  //  console.log('calling client')
    this.messages.push( "calling client");
-   //this.messages.push()
+   this.timer.push(date)
+    this.stop()
     this.userNumber = this.user.countryCode + this.user.phone 
 //console.log('calling client ', this.userNumber)
   
     
-    this.api.postResource('call', {'number': this.userNumber} )
-    .subscribe((resp)=>{
-      console.log('user called')
-    })
+    // this.api.postResource('call', {'number': this.userNumber} )
+    // .subscribe((resp)=>{
+    //   this.navCtr.navigateForward('/success')
+    //   this.stop()
+    // })
   }
   tracking(){
+    let date = Date.now()
     console.log('tracking');
-    this.messages.push("tracking")
+    this.messages.push('tracking')
+    this.timer.push(date)
   }
 
 }

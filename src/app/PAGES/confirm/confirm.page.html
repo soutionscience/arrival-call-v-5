@@ -47,6 +47,11 @@
         distance
       </div>
     </ion-col>
+    <ion-col>
+      <div>
+        time
+      </div>
+    </ion-col>
   </ion-row>
   <ion-row>
     <ion-col *ngIf="current">
@@ -61,6 +66,9 @@
             <ion-col *ngIf="distance">
               <div *ngFor="let d of distance">{{d | number : '1.2-2'}}</div>
                 </ion-col>
+                <ion-col *ngIf="timer">
+                  <div *ngFor="let d of timer">{{d | date : 'mediumTime'}}</div>
+                    </ion-col>
   </ion-row>
   
 </ion-grid>
