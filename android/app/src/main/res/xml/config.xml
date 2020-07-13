@@ -9,6 +9,10 @@
     <param name="android-package" value="de.appplant.cordova.plugin.background.BackgroundModeExt"/>
   </feature>
 
+  <feature name="Badge">
+    <param name="android-package" value="de.appplant.cordova.plugin.badge.Badge"/>
+  </feature>
+
   <feature name="Device">
     <param name="android-package" value="org.apache.cordova.device.Device"/>
   </feature>
@@ -19,6 +23,10 @@
 
   <feature name="Insomnia">
     <param name="android-package" value="nl.xservices.plugins.Insomnia"/>
+  </feature>
+
+  <feature name="LocalNotification">
+    <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification"/>
   </feature>
 
   

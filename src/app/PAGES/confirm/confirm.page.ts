@@ -30,7 +30,8 @@ export class ConfirmPage implements OnInit {
   distance: any []=[];
   userNumber : string;
   current: any []=[];
-timer: any []= []
+times: any []= [];
+timer: any;
   //distance: any []=[]
 
   constructor(private appStorage: AppStorageService,
@@ -61,26 +62,26 @@ timer: any []= []
   })
   }
 
-  confirm(){
-    this.insomnia.keepAwake()
-    .then(()=>{
-      this.watch = Geolocation.watchPosition({}, (data, err)=>{
-        if(err) console.log(err)
-        let current = {lat:data.coords.latitude, lng: data.coords.longitude }
-        this.addToArray(current);
-        //console.log('calculated ',   this.cal.calculateRadius(this.place.coords, current, this.place.fence),' fence ', this.place.fence)
-        this.distance.push( this.cal.calculateRadius(this.place.coords, current, this.place.fence))
-        this.cal.calculateRadius(this.place.coords, current, this.place.fence) <= this.place.fence ?
-        this.callClient(): this.tracking()
+  // confirm(){
+  //   // this.insomnia.keepAwake()
+  //   // .then(()=>{
+  //     this.watch = Geolocation.watchPosition({}, (data, err)=>{
+  //       if(err) console.log(err)
+  //       let current = {lat:data.coords.latitude, lng: data.coords.longitude }
+  //       this.addToArray(current);
+  //       //console.log('calculated ',   this.cal.calculateRadius(this.place.coords, current, this.place.fence),' fence ', this.place.fence)
+  //       this.distance.push( this.cal.calculateRadius(this.place.coords, current, this.place.fence))
+  //       this.cal.calculateRadius(this.place.coords, current, this.place.fence) <= this.place.fence ?
+  //       this.callClient(): this.tracking()
   
       
         
-      })
+  //     })
 
-    })
+  //   // })
 
 
-  }
+  // }
   // confirm(){
   //   this.insomnia.keepAwake()
   //   .then(()=>{
@@ -99,6 +100,45 @@ timer: any []= []
 
   // }
 
+  confirm(){
+this.background.on('activate').subscribe((resp)=>{
+  this.setTimer()
+      
+
+    }, (error)=>{
+    //console.log('error activating ', error)
+    this.setTimer()
+
+    })
+    this.background.enable();
+
+    
+
+
+  }
+
+  setTimer(){
+    this.timer = setInterval(()=>{
+      this.getCurrentPosition().then((data)=>{
+     
+        let current = {lat:data.coords.latitude, lng: data.coords.longitude };
+        this.addToArray(current);
+        this.distance.push( this.cal.calculateRadius(this.place.coords, current, this.place.fence))
+        this.cal.calculateRadius(this.place.coords, current, this.place.fence) <= this.place.fence ?
+        this.callClient(): this.tracking()
+        
+      })
+  
+  
+      }, 5000)
+
+  }
+
+  async getCurrentPosition() {
+    const coordinates = await Geolocation.getCurrentPosition();
+    return coordinates
+  }
+
   addToArray(item){
     if(this.current.length>5){
      // this.current.shift();
@@ -110,29 +150,31 @@ timer: any []= []
   stop(){
     //console.log('stop called')
   //  this.watch.unsubscribe()
-  Geolocation.clearWatch({id:this.watch})
+  //Geolocation.clearWatch({id:this.watch})
+  clearInterval(this.timer)
   }
  callClient(){
    let date =  Date.now()
   //  console.log('calling client')
    this.messages.push( "calling client");
-   this.timer.push(date)
+   this.times.push(date)
     this.stop()
     this.userNumber = this.user.countryCode + this.user.phone 
 //console.log('calling client ', this.userNumber)
   
     
-    // this.api.postResource('call', {'number': this.userNumber} )
-    // .subscribe((resp)=>{
-    //   this.navCtr.navigateForward('/success')
-    //   this.stop()
-    // })
+    //this.api.postResource('call', {'number': this.userNumber} )
+    this.api.postResource('call', {"count":1})
+    .subscribe((resp)=>{
+      this.navCtr.navigateForward('/success')
+      this.stop()
+    })
   }
   tracking(){
     let date = Date.now()
     console.log('tracking');
     this.messages.push('tracking')
-    this.timer.push(date)
+    this.times.push(date)
   }
 
 }

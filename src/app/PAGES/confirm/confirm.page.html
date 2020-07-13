@@ -66,8 +66,8 @@
             <ion-col *ngIf="distance">
               <div *ngFor="let d of distance">{{d | number : '1.2-2'}}</div>
                 </ion-col>
-                <ion-col *ngIf="timer">
-                  <div *ngFor="let d of timer">{{d | date : 'mediumTime'}}</div>
+                <ion-col *ngIf="times">
+                  <div *ngFor="let d of times">{{d | date : 'mediumTime'}}</div>
                     </ion-col>
   </ion-row>
   
